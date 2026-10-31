@@ -1,0 +1,8 @@
+{
+  "name": "Chronos - Cloud Attendance & Timesheet Tracker",
+  "description": "Secure cloud-based employee attendance tracker with unique Employee ID clock-in/out, personal monthly dashboard, admin timesheet management, discrepancy adjustment, and CSV/PDF export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

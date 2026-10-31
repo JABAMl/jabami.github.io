@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "Employee": {
+      "title": "Employee",
+      "description": "Registered employee with unique employee ID in department WALT",
+      "type": "object",
+      "properties": {
+        "employeeId": {
+          "type": "string",
+          "description": "Unique Employee identifier, e.g. EMP-1001",
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "description": "Full employee name",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Employee email address",
+          "maxLength": 128
+        },
+        "department": {
+          "type": "string",
+          "description": "Department name, strictly WALT",
+          "maxLength": 64
+        },
+        "role": {
+          "type": "string",
+          "description": "System role: admin or employee",
+          "enum": ["admin", "employee"]
+        },
+        "pin": {
+          "type": "string",
+          "description": "Secure PIN for quick kiosk or portal punch login",
+          "maxLength": 32
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether employee account is active"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        }
+      },
+      "required": ["employeeId", "name", "role", "isActive"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Individual clock-in/out attendance session record",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique record id",
+          "maxLength": 128
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Foreign key to employee ID",
+          "maxLength": 64
+        },
+        "employeeName": {
+          "type": "string",
+          "description": "Denormalized employee name",
+          "maxLength": 100
+        },
+        "department": {
+          "type": "string",
+          "description": "Department name, strictly WALT",
+          "maxLength": 64
+        },
+        "date": {
+          "type": "string",
+          "description": "Date string YYYY-MM-DD",
+          "maxLength": 10
+        },
+        "clockInTime": {
+          "type": "string",
+          "description": "ISO timestamp for clock in",
+          "maxLength": 64
+        },
+        "clockOutTime": {
+          "type": "string",
+          "description": "ISO timestamp for clock out or null if active",
+          "maxLength": 64
+        },
+        "breakDurationMinutes": {
+          "type": "number",
+          "description": "Total break time in minutes"
+        },
+        "totalHours": {
+          "type": "number",
+          "description": "Computed work hours excluding breaks"
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the shift",
+          "enum": ["active", "on_break", "completed", "adjusted"]
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional punch or adjustment notes",
+          "maxLength": 500
+        },
+        "adjustedBy": {
+          "type": "string",
+          "description": "Admin ID who adjusted this record if applicable",
+          "maxLength": 64
+        },
+        "adjustmentReason": {
+          "type": "string",
+          "description": "Reason for timesheet discrepancy adjustment",
+          "maxLength": 500
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["employeeId", "employeeName", "date", "clockInTime", "status"]
+    }
+  },
+  "firestore": {
+    "/employees/{employeeDocId}": {
+      "schema": "Employee",
+      "description": "List of company employees and admins in department WALT"
+    },
+    "/attendance/{attendanceDocId}": {
+      "schema": "AttendanceRecord",
+      "description": "Clock in and out attendance logs"
+    }
+  }
+}

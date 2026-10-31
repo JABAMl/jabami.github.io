@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connectivity probe
+    match /test/connection {
+      allow read: if true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Employees collection
+    match /employees/{employeeDocId} {
+      allow read: if true;
+      allow create, update: if isValidId(employeeDocId) 
+        && request.resource.data.employeeId is string
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.role in ['admin', 'employee'];
+      allow delete: if isValidId(employeeDocId);
+    }
+
+    // Attendance records
+    match /attendance/{attendanceDocId} {
+      allow read: if true;
+      allow create: if isValidId(attendanceDocId)
+        && request.resource.data.employeeId is string
+        && request.resource.data.employeeName is string
+        && request.resource.data.employeeName.size() <= 100
+        && request.resource.data.date is string
+        && request.resource.data.clockInTime is string;
+      allow update: if isValidId(attendanceDocId)
+        && request.resource.data.employeeId is string
+        && request.resource.data.status in ['active', 'on_break', 'completed', 'adjusted'];
+      allow delete: if isValidId(attendanceDocId);
+    }
+
+    // Company Settings (e.g. shifts, policy, overtime threshold)
+    match /settings/{settingDocId} {
+      allow read: if true;
+      allow write: if isValidId(settingDocId);
+    }
+  }
+}
